@@ -4,4 +4,6 @@ db/development.db.sqlite3
 db/development_structure.sql
 cache/**
 .DS_Store
-
+secret
+storage/**
+config/database.yml
