@@ -12,7 +12,7 @@ class RoutesTest < ActionController::TestCase
     assert_routing('x/y', :controller => 'wiki', :web => 'x', :action => 'y')
     assert_routing('x/y/z', :controller => 'wiki', :web => 'x', :action => 'y', :id => 'z')
     assert_recognizes({:web => 'x', :controller => 'wiki', :action => 'y'}, 'x/y/')
-    assert_recognizes({:web => 'x', :controller => 'wiki', :action => 'y', :id => 'z'}, 'x/y/z/')
+    assert_recognizes({:web => 'x', :controller => 'wiki', :action => 'y', :id => 'z'}, 'x/y/z')
   end
   
   def test_parse_uri_interestng_cases

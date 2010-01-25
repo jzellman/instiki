@@ -5,7 +5,7 @@
 # commiting to SVN
 # $INSTIKI_TEST_PDFLATEX = true
 
-require Rails.root.join('test', 'test_helper')
+require File.expand_path(File.dirname(__FILE__) + '/../test_helper')
 require 'wiki_controller'
 require 'rexml/document'
 require 'tempfile'
@@ -833,37 +833,7 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal 'AnonymousCoward', another_page.author
   end
   
-  def test_save_revised_content_invalid_author_name
-    r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => 'Contents of a very new page',
-          'author' => 'foo.bar'
-    assert_redirected_to :action => 'edit', :controller => 'wiki', :web => 'wiki1', :id => 'HomePage',
-      :content => 'Contents of a very new page'
-    assert r.flash[:error].to_s == 'Your name cannot contain a "."'
-
-    r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => 'a'*10184,
-          'author' => 'foo.bar'
-    assert_redirected_to :action => 'edit', :controller => 'wiki', :web => 'wiki1', :id => 'HomePage'
-    assert r.flash[:error].to_s == 'Your name cannot contain a "."'
-    
-    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page',
-          'author' => 'foo.bar'
-    assert_redirected_to :action => 'new', :controller => 'wiki', :web => 'wiki1', :id => 'NewPage',
-      :content => 'Contents of a new page'
-    assert r.flash[:error].to_s == 'Your name cannot contain a "."'
-
-    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'a'*10184,
-          'author' => 'foo.bar'
-    assert_redirected_to :action => 'new', :controller => 'wiki', :web => 'wiki1', :id => 'NewPage'
-    assert r.flash[:error].to_s == 'Your name cannot contain a "."'    
-  end
-
-  def test_save_invalid_author_name
-    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page', 
-      'author' => 'foo.bar'
-    assert_redirected_to :action => 'new', :controller => 'wiki', :web => 'wiki1', :id => 'NewPage',
-      :content => 'Contents of a new page'
-    assert r.flash[:error].to_s == 'Your name cannot contain a "."'
-
+  def test_save_special_characters_in_author_name
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page', 
       'author' => "Fu\000Manchu"
 
