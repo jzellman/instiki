@@ -15,6 +15,9 @@ ActionController::Routing::Routes.draw do |map|
   map.connect 'delete_files', :controller => 'admin', :action => 'delete_files'
   map.connect 'web_list', :controller => 'wiki', :action => 'web_list'
 
+  # an id can contain anything but a /
+  id_regexp = /[^\/]*/
+
   connect_to_web map, ':web/edit_web', :controller => 'admin', :action => 'edit_web'
   connect_to_web map, ':web/remove_orphaned_pages', :controller => 'admin', :action => 'remove_orphaned_pages'
   connect_to_web map, ':web/remove_orphaned_pages_in_category', :controller => 'admin', :action => 'remove_orphaned_pages_in_category'
@@ -22,15 +25,15 @@ ActionController::Routing::Routes.draw do |map|
   connect_to_web map, ':web/files/pngs/:id', :controller => 'file', :action => 'blahtex_png', :requirements => {:id => /[-._\w]+/}, :id => nil
   connect_to_web map, ':web/files/:id', :controller => 'file', :action => 'file', :requirements => {:id => /[-._\w]+/}, :id => nil
   connect_to_web map, ':web/file_list/:sort_order', :controller => 'wiki', :action => 'file_list', :sort_order => nil
-  connect_to_web map, ':web/import/:id', :controller => 'file', :action => 'import'
+  connect_to_web map, ':web/import/:id', :controller => 'file', :action => 'import', :requirements => {:id => id_regexp }
   connect_to_web map, ':web/login', :controller => 'wiki', :action => 'login'
   connect_to_web map, ':web/web_list', :controller => 'wiki', :action => 'web_list'
-  connect_to_web map, ':web/show/diff/:id', :controller => 'wiki', :action => 'show', :mode => 'diff'
-  connect_to_web map, ':web/revision/diff/:id/:rev', :controller => 'wiki', :action => 'revision', :mode => 'diff', :requirements => { :rev => /\d*/}
-  connect_to_web map, ':web/revision/:id/:rev', :controller => 'wiki', :action => 'revision', :requirements => { :rev => /\d*/}
+  connect_to_web map, ':web/show/diff/:id', :controller => 'wiki', :action => 'show', :mode => 'diff', :requirements => { :id => id_regexp }
+  connect_to_web map, ':web/revision/diff/:id/:rev', :controller => 'wiki', :action => 'revision', :mode => 'diff', :requirements => { :rev => /\d*/, :id => id_regexp }
+  connect_to_web map, ':web/revision/:id/:rev', :controller => 'wiki', :action => 'revision', :requirements => { :rev => /\d*/, :id => id_regexp }
   connect_to_web map, ':web/list/:category', :controller => 'wiki', :action => 'list', :requirements => { :category => /.*/}, :category => nil
   connect_to_web map, ':web/recently_revised/:category', :controller => 'wiki', :action => 'recently_revised', :requirements => { :category => /.*/}, :category => nil
-  connect_to_web map, ':web/:action/:id', :controller => 'wiki', :requirements => {:id => /.*/}
+  connect_to_web map, ':web/:action/:id', :controller => 'wiki', :requirements => {:id => id_regexp }
 
   connect_to_web map, ':web/:action', :controller => 'wiki'
   connect_to_web map, ':web', :controller => 'wiki', :action => 'index'
