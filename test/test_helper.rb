@@ -107,6 +107,10 @@ class StubUrlGenerator < AbstractUrlGenerator
     super(:doesnt_need_controller)
   end
 
+  def url_for(hash = {})
+    '../files/pngs'
+  end
+
   def file_link(mode, name, text, web_name, known_file, description)
     link = CGI.escape(name)
     case mode
@@ -127,7 +131,6 @@ class StubUrlGenerator < AbstractUrlGenerator
 
   def page_link(mode, name, text, web_address, known_page)
     link = CGI.escape(name)
-    return %{<span class='wikilink-error'><b>Illegal link (target contains a '.'):</b> #{name}</span>} if name.include?('.')
     title = web_address == 'wiki1' ? '' : " title='#{web_address}'"
     case mode
     when :export

@@ -91,6 +91,4 @@ module WikiHelper
         {:class => 'navlink', :id => 'rollback', :rel => 'nofollow'})
   end
 
-  
-
 end

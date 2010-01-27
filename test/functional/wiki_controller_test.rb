@@ -5,7 +5,7 @@
 # commiting to SVN
 # $INSTIKI_TEST_PDFLATEX = true
 
-require File.expand_path(File.dirname(__FILE__) + '/../test_helper')
+require Rails.root.join('test', 'test_helper')
 require 'wiki_controller'
 require 'rexml/document'
 require 'tempfile'
@@ -152,7 +152,7 @@ class WikiControllerTest < ActionController::TestCase
             zip.file.read('Oak.xhtml').gsub(/\s+/, ' ')
         assert_match /.*<html .*First revision of the.*HomePage.*end.*<\/html>/, 
             zip.file.read('HomePage.xhtml').gsub(/\s+/, ' ')
-        assert_equal '<html xmlns=\'http://www.w3.org/1999/xhtml\'><head><META HTTP-EQUIV="Refresh" CONTENT="0;URL=HomePage.xhtml"></head></html> ', zip.file.read('index.xhtml').gsub(/\s+/, ' ')
+        assert_equal '<html xmlns=\'http://www.w3.org/1999/xhtml\'><head><meta http-equiv="Refresh" content="0;URL=HomePage.xhtml" /></head></html> ', zip.file.read('index.xhtml').gsub(/\s+/, ' ')
       end
     ensure
       File.delete(@tempfile_path) if File.exist?(@tempfile_path)
@@ -183,7 +183,7 @@ class WikiControllerTest < ActionController::TestCase
             zip.file.read('Oak.html').gsub(/\s+/, ' ')
         assert_match /.*<html .*First revision of the.*HomePage.*end.*<\/html>/, 
             zip.file.read('HomePage.html').gsub(/\s+/, ' ')
-        assert_equal '<html xmlns=\'http://www.w3.org/1999/xhtml\'><head><META HTTP-EQUIV="Refresh" CONTENT="0;URL=HomePage.html"></head></html> ', zip.file.read('index.html').gsub(/\s+/, ' ')
+        assert_equal '<html xmlns=\'http://www.w3.org/1999/xhtml\'><head><meta http-equiv="Refresh" content="0;URL=HomePage.html" /></head></html> ', zip.file.read('index.html').gsub(/\s+/, ' ')
       end
     ensure
       File.delete(@tempfile_path) if File.exist?(@tempfile_path)
@@ -833,7 +833,19 @@ class WikiControllerTest < ActionController::TestCase
     assert_equal 'AnonymousCoward', another_page.author
   end
   
-  def test_save_special_characters_in_author_name
+  def test_save_revised_content_author_name_with_period
+    r = process 'save', 'web' => 'wiki1', 'id' => 'HomePage', 'content' => 'Contents of a very new page',
+          'author' => 'foo.bar'
+    assert_redirected_to :action => 'show', :controller => 'wiki', :web => 'wiki1', :id => 'HomePage'
+    assert_equal 'foo.bar', @wiki.read_page('wiki1', 'HomePage').author
+
+    r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'a'*10184,
+          'author' => 'foo.bar'
+    assert_redirected_to :action => 'show', :controller => 'wiki', :web => 'wiki1', :id => 'NewPage'
+    assert_equal 'foo.bar', @wiki.read_page('wiki1', 'NewPage').author
+  end
+
+  def test_save_invalid_author_name
     r = process 'save', 'web' => 'wiki1', 'id' => 'NewPage', 'content' => 'Contents of a new page', 
       'author' => "Fu\000Manchu"
 
